@@ -16,7 +16,7 @@ func main() {
 	r := gin.Default()
 
 	r.GET("/", func(c *gin.Context) {
-		imagePath, err := getRandomImage()
+		imagePath, err := getRandomImage(false)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
@@ -29,12 +29,30 @@ func main() {
 		c.File(imagePath)
 	})
 
+	 r.GET("/macka", func(c *gin.Context) {
+                imagePath, err := getRandomImage(true)
+                if err != nil {
+                        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+                        return
+                }
+
+                c.Header("Cache-Control", "no-cache, no-store, must-revalidate")
+                c.Header("Pragma", "no-cache")
+                c.Header("Expires", "0")
+
+                c.File(imagePath)
+        })
+
 	log.Println("Server starting on :8080")
 	r.Run(":8080")
 }
 
-func getRandomImage() (string, error) {
+func getRandomImage(isCat bool) (string, error) {
 	floppaDir := "./floppa"
+
+	if(isCat){
+		floppaDir = "./macky"
+	}
 
 	files, err := os.ReadDir(floppaDir)
 	if err != nil {
