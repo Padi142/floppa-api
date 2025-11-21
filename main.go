@@ -70,6 +70,16 @@ func main() {
 		c.Data(http.StatusOK, "image/jpeg", imageData)
 	})
 
+	r.GET("/macka/count", func(c *gin.Context) {
+		count, err := getCollectionCount(context.Background(), config.PocketBaseURL, "macky")
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"count": count})
+	})
+
 	log.Println("Server starting on :8080")
 	r.Run(":8080")
 }
@@ -163,6 +173,40 @@ func getRandomCat(ctx context.Context, pocketBaseURL string) ([]byte, string, er
 	}
 
 	return imageData, cat.Image, nil
+}
+
+type CollectionStats struct {
+	TotalItems int `json:"totalItems"`
+	TotalPages int `json:"totalPages"`
+	Page       int `json:"page"`
+	PerPage    int `json:"perPage"`
+}
+
+func getCollectionCount(ctx context.Context, pocketBaseURL, collectionName string) (int, error) {
+
+	req, err := http.NewRequestWithContext(ctx, "GET", fmt.Sprintf("%s/api/collections/%s/records?perPage=1", pocketBaseURL, collectionName), nil)
+	if err != nil {
+		return 0, fmt.Errorf("failed to create request: %w", err)
+	}
+
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		return 0, fmt.Errorf("request failed: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return 0, fmt.Errorf("API error %d: %s", resp.StatusCode, string(body))
+	}
+
+	var stats CollectionStats
+	if err := json.NewDecoder(resp.Body).Decode(&stats); err != nil {
+		return 0, fmt.Errorf("failed to decode response: %w", err)
+	}
+
+	return stats.TotalItems, nil
 }
 
 func isImageFile(filename string) bool {
