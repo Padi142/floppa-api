@@ -71,7 +71,8 @@
           <h3 class="text-xl font-bold mb-2">Floppa Generator 3000</h3>
           <p class="mb-4">Klikni a uvidis zazrak!</p>
           <a
-            href="/flopapi"
+            href="/floppapi"
+            target="_blank"
             class="inline-block bg-orange-500 border-4 border-[outset] border-red-600 text-xl p-2 text-black font-bold hover:scale-110 transition-transform animate-pulse"
             >&gt;&gt;&gt; Ziskaj Floppu &lt;&lt;&lt;</a
           >
@@ -86,6 +87,7 @@
           <p class="mb-4">Originalna macka z databazy!</p>
           <a
             href="/macka"
+            target="_blank"
             class="inline-block bg-orange-500 border-4 border-[outset] border-red-600 text-xl p-2 text-black font-bold hover:scale-110 transition-transform animate-pulse"
             >&gt;&gt;&gt; Ziskaj Macku &lt;&lt;&lt;</a
           >
