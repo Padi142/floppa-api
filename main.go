@@ -61,8 +61,12 @@ func main() {
 	}
 
 	r := gin.Default()
+	
+	// Serve frontend static files
+	r.Static("/assets", "./frontend/dist/assets")
+	r.StaticFile("/", "./frontend/dist/index.html")
 
-	r.GET("/", func(c *gin.Context) {
+	r.GET("/flopapi", func(c *gin.Context) {
 		imagePath, err := getRandomImage()
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
