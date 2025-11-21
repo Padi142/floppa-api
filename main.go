@@ -20,11 +20,31 @@ type Config struct {
 }
 
 func loadConfig() (*Config, error) {
-	file, err := os.Open("config.json")
-	if err != nil {
-		return nil, fmt.Errorf("failed to open config.json: %w", err)
+	// Try multiple config locations
+	configPaths := []string{
+		"/config.json",  // Mounted in Coolify/Docker
+		"config.json",   // Local development
+		"./config.json", // Explicit relative path
+	}
+
+	var file *os.File
+	var err error
+	var usedPath string
+
+	for _, path := range configPaths {
+		file, err = os.Open(path)
+		if err == nil {
+			usedPath = path
+			break
+		}
+	}
+
+	if file == nil {
+		return nil, fmt.Errorf("failed to open config.json in any location: %w", err)
 	}
 	defer file.Close()
+
+	log.Printf("Loading config from: %s", usedPath)
 
 	var config Config
 	if err := json.NewDecoder(file).Decode(&config); err != nil {
