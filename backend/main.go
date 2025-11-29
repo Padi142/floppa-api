@@ -291,7 +291,7 @@ func updateRecordViews(ctx context.Context, pocketBaseURL, collectionName, recor
 }
 
 func getRandomImageFromCollectionByVIMId(ctx context.Context, collectionName, vimId, pocketBaseURL string) ([]byte, error) {
-	req, err := http.NewRequestWithContext(ctx, "GET", fmt.Sprintf("%s/api/collections/%s/records?filter=vimId='%s'", pocketBaseURL, collectionName, vimId), nil)
+	req, err := http.NewRequestWithContext(ctx, "GET", fmt.Sprintf("%s/api/collections/%s/records?filter=vimId='%s'&sort=@random", pocketBaseURL, collectionName, vimId), nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
