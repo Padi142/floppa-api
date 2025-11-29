@@ -1,15 +1,22 @@
 package config
 
+import (
+	"encoding/json"
+	"fmt"
+	"log"
+	"os"
+)
+
 type Config struct {
 	PocketBaseURL string `json:"pocketbase_url"`
 }
 
-func loadConfig() (*Config, error) {
+func LoadConfig() (*Config, error) {
 	// Try multiple config locations
 	configPaths := []string{
-		"/config.json",  // Mounted in Coolify/Docker
-		"config.json",   // Local development
-		"./config.json", // Explicit relative path
+		"/app/config.json",           // Mounted in Coolify/Docker
+		"config/config.json",         // Local development
+		"backend/config/config.json", // Explicit relative path
 	}
 
 	var file *os.File

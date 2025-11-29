@@ -13,14 +13,13 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/gin-gonic/gin"
+	"floppa-api/config"
 
-	. "backend/config"
+	"github.com/gin-gonic/gin"
 )
 
-
 func main() {
-	cfg, err := config.loadConfig()
+	cfg, err := config.LoadConfig()
 	if err != nil {
 		log.Fatalf("Failed to load configuration: %v", err)
 	}
