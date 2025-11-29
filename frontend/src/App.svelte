@@ -1,4 +1,5 @@
 <script>
+  import shortcutImg from "../static/shortcut.png";
   let mackaCount = null;
 
   async function getMackaCount() {
@@ -109,6 +110,24 @@
               Pocet maciek: {mackaCount}
             </p>
           {/if}
+        </div>
+
+        <div
+          class="border-4 border-dotted border-fuchsia-500 bg-cyan-300 p-5 w-[300px] rounded-3xl shadow-[10px_10px_0px_black] relative z-10 animate-border-rotate"
+        >
+          <h3 class="text-xl font-bold mb-2">iOS Emergency Macka Shortcut</h3>
+          <p class="mb-4">Nahodne macky priamo v tvojom iPhone!</p>
+          <img
+            src={shortcutImg}
+            alt="Shortcut Preview"
+            class="w-full mb-4 border-2 border-black rounded-xl"
+          />
+          <a
+            href="https://www.icloud.com/shortcuts/1a32ad97d88b47b1b87b5542ff27955c"
+            target="_blank"
+            class="inline-block bg-orange-500 border-4 border-[outset] border-red-600 text-xl p-2 text-black font-bold hover:scale-110 transition-transform animate-pulse"
+            >&gt;&gt;&gt; Stiahni Tu &lt;&lt;&lt;</a
+          >
         </div>
       </div>
 
