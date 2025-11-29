@@ -105,6 +105,21 @@ func main() {
 		c.Data(http.StatusOK, "image/jpeg", imageData)
 	})
 
+	r.GET("/macka/vim/:vimId", func(c *gin.Context) {
+		vimId := c.Param("vimId")
+		imageData, err := getRandomImageFromCollectionByVIMId(context.Background(), "macky", vimId, config.PocketBaseURL)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.Header("Cache-Control", "no-cache, no-store, must-revalidate")
+		c.Header("Pragma", "no-cache")
+		c.Header("Expires", "0")
+
+		c.Data(http.StatusOK, "image/jpeg", imageData)
+	})
+
 	r.GET("/macka/count", func(c *gin.Context) {
 		count, err := getCollectionCount(context.Background(), config.PocketBaseURL, "macky")
 		if err != nil {
@@ -273,6 +288,62 @@ func updateRecordViews(ctx context.Context, pocketBaseURL, collectionName, recor
 	}
 
 	return nil
+}
+
+func getRandomImageFromCollectionByVIMId(ctx context.Context, collectionName, vimId, pocketBaseURL string) ([]byte, error) {
+	req, err := http.NewRequestWithContext(ctx, "GET", fmt.Sprintf("%s/api/collections/%s/records?filter=vimId='%s'", pocketBaseURL, collectionName, vimId), nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch random record: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("API error %d: %s", resp.StatusCode, string(body))
+	}
+
+	var randomResp RandomCatsResponse
+	if err := json.NewDecoder(resp.Body).Decode(&randomResp); err != nil {
+		return nil, fmt.Errorf("failed to decode response: %w", err)
+	}
+
+	if len(randomResp.Items) == 0 {
+		return nil, fmt.Errorf("no cat records found in collection")
+	}
+
+	cat := randomResp.Items[0]
+	if cat.Image == "" {
+		return nil, fmt.Errorf("record has no image field")
+	}
+
+	req, err = http.NewRequestWithContext(ctx, "GET", fmt.Sprintf("%s/api/files/%s/%s/%s", pocketBaseURL, collectionName, cat.ID, cat.Image), nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create image request: %w", err)
+	}
+
+	resp, err = client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to download image: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("image download error %d: %s", resp.StatusCode, string(body))
+	}
+
+	imageData, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read image data: %w", err)
+	}
+
+	return imageData, nil
 }
 
 func isImageFile(filename string) bool {
