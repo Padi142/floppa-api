@@ -14,49 +14,13 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+
+	. "backend/config"
 )
 
-type Config struct {
-	PocketBaseURL string `json:"pocketbase_url"`
-}
-
-func loadConfig() (*Config, error) {
-	// Try multiple config locations
-	configPaths := []string{
-		"/config.json",  // Mounted in Coolify/Docker
-		"config.json",   // Local development
-		"./config.json", // Explicit relative path
-	}
-
-	var file *os.File
-	var err error
-	var usedPath string
-
-	for _, path := range configPaths {
-		file, err = os.Open(path)
-		if err == nil {
-			usedPath = path
-			break
-		}
-	}
-
-	if file == nil {
-		return nil, fmt.Errorf("failed to open config.json in any location: %w", err)
-	}
-	defer file.Close()
-
-	log.Printf("Loading config from: %s", usedPath)
-
-	var config Config
-	if err := json.NewDecoder(file).Decode(&config); err != nil {
-		return nil, fmt.Errorf("failed to decode config.json: %w", err)
-	}
-
-	return &config, nil
-}
 
 func main() {
-	config, err := loadConfig()
+	cfg, err := config.loadConfig()
 	if err != nil {
 		log.Fatalf("Failed to load configuration: %v", err)
 	}
@@ -82,7 +46,7 @@ func main() {
 	})
 
 	r.GET("/macka", func(c *gin.Context) {
-		imageData, cat, err := getRandomImageFromCollection(context.Background(), "macky", config.PocketBaseURL)
+		imageData, cat, err := getRandomImageFromCollection(context.Background(), "macky", cfg.PocketBaseURL)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
@@ -93,7 +57,7 @@ func main() {
 			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 			defer cancel()
 
-			if err := updateRecordViews(ctx, config.PocketBaseURL, "macky", recordID, currentViews); err != nil {
+			if err := updateRecordViews(ctx, cfg.PocketBaseURL, "macky", recordID, currentViews); err != nil {
 				log.Printf("Failed to update views for record %s: %v", recordID, err)
 			}
 		}(cat.ID, cat.Views)
@@ -107,7 +71,7 @@ func main() {
 
 	r.GET("/macka/vim/:vimId", func(c *gin.Context) {
 		vimId := c.Param("vimId")
-		imageData, err := getRandomImageFromCollectionByVIMId(context.Background(), "macky", vimId, config.PocketBaseURL)
+		imageData, err := getRandomImageFromCollectionByVIMId(context.Background(), "macky", vimId, cfg.PocketBaseURL)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
@@ -121,7 +85,7 @@ func main() {
 	})
 
 	r.GET("/macka/count", func(c *gin.Context) {
-		count, err := getCollectionCount(context.Background(), config.PocketBaseURL, "macky")
+		count, err := getCollectionCount(context.Background(), cfg.PocketBaseURL, "macky")
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
