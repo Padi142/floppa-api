@@ -1,5 +1,6 @@
 <script>
   import { onMount } from "svelte";
+  import shortcutImg from "../static/shortcut.png";
 
   let animals = [];
   let counts = {};
@@ -30,11 +31,11 @@
 <div
   class="min-h-screen bg-gradient-to-br from-red-500 via-yellow-500 to-purple-600 bg-[length:400%_400%] animate-gradient-bg font-comic text-blue-700 overflow-x-hidden"
 >
-  <main class="text-center p-5 relative">
+  <main class="text-center p-2 md:p-5 relative">
     <div
-      class="bg-red-600 text-white p-2 overflow-hidden whitespace-nowrap border-4 border-dashed border-blue-700"
+      class="bg-red-600 text-white p-2 overflow-hidden md:whitespace-nowrap border-4 border-dashed border-blue-700"
     >
-      <h1 class="animate-rainbow text-2xl font-bold">
+      <h1 class="animate-rainbow text-xl md:text-2xl font-bold">
         dobry den vitajte na stranke padisoft enterprises sro, nas startup ktory
         je buducnostou API obrazkov zvieratiek
       </h1>
@@ -42,12 +43,12 @@
 
     <img
       src="https://media.tenor.com/EFDwfjT2GuQAAAAd/spinning-cat.gif"
-      class="absolute w-[100px] z-10 top-5 left-5 animate-float"
+      class="w-[60px] md:w-[100px] z-10 md:absolute md:top-5 md:left-5 animate-float inline-block mx-2 mt-4 md:m-0"
       alt="Spinning Cat"
     />
     <img
       src="https://media.tenor.com/El89itaAWsIAAAAj/maxwell.gif"
-      class="absolute w-[100px] z-10 top-5 right-5 animate-float-reverse"
+      class="w-[60px] md:w-[100px] z-10 md:absolute md:top-5 md:right-5 animate-float-reverse inline-block mx-2 mt-4 md:m-0"
       alt="Maxwell"
     />
 
@@ -56,7 +57,7 @@
         class="border-8 border-[ridge] border-lime-500 bg-pink-300 p-5 my-5 mx-auto max-w-xl -skew-x-6"
       >
         <h2
-          class="underline decoration-wavy decoration-red-600 text-5xl -rotate-6 inline-block mb-4"
+          class="underline decoration-wavy decoration-red-600 text-3xl md:text-5xl -rotate-6 inline-block mb-4"
         >
           nas tym
         </h2>
@@ -81,7 +82,7 @@
 
         {#each animals as animal, i}
           <div
-            class="border-4 border-dotted border-fuchsia-500 bg-cyan-300 p-5 w-[300px] rounded-3xl shadow-[10px_10px_0px_black] relative z-10"
+            class="border-4 border-dotted border-fuchsia-500 bg-cyan-300 p-5 w-full max-w-[300px] rounded-3xl shadow-[10px_10px_0px_black] relative z-10"
             class:animate-border-rotate={i % 2 === 0}
             class:animate-border-rotate-reverse={i % 2 === 1}
           >
@@ -107,6 +108,25 @@
             </div>
           </div>
         {/each}
+
+        <!-- iOS Shortcut - only for macka -->
+        <div
+          class="border-4 border-dotted border-fuchsia-500 bg-cyan-300 p-5 w-full max-w-[300px] rounded-3xl shadow-[10px_10px_0px_black] relative z-10 animate-border-rotate"
+        >
+          <h3 class="text-xl font-bold mb-2">iOS Emergency Macka Shortcut</h3>
+          <p class="mb-4">Nahodne macky priamo v tvojom iPhone!</p>
+          <img
+            src={shortcutImg}
+            alt="Shortcut Preview"
+            class="w-full mb-4 border-2 border-black rounded-xl"
+          />
+          <a
+            href="https://www.icloud.com/shortcuts/1a32ad97d88b47b1b87b5542ff27955c"
+            target="_blank"
+            class="inline-block bg-orange-500 border-4 border-[outset] border-red-600 text-xl p-2 text-black font-bold hover:scale-110 transition-transform animate-pulse"
+            >&gt;&gt;&gt; Stiahni Tu &lt;&lt;&lt;</a
+          >
+        </div>
       </div>
 
       <div class="mt-12 flex justify-around">

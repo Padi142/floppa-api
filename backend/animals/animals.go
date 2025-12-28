@@ -212,6 +212,61 @@ func (a *PocketBaseAnimal) updateViews(recordID string, currentViews int) {
 	}
 }
 
+// GetImageByVimId gets a random image from a collection filtered by VIM ID (for iOS shortcut)
+func GetImageByVimId(ctx context.Context, collectionName, vimId, pocketBaseURL string) ([]byte, error) {
+	client := &http.Client{Timeout: 10 * time.Second}
+
+	req, err := http.NewRequestWithContext(ctx, "GET",
+		fmt.Sprintf("%s/api/collections/%s/records?filter=vimId='%s'&sort=@random", pocketBaseURL, collectionName, vimId), nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch random record: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("API error %d: %s", resp.StatusCode, string(body))
+	}
+
+	var listResp listResponse
+	if err := json.NewDecoder(resp.Body).Decode(&listResp); err != nil {
+		return nil, fmt.Errorf("failed to decode response: %w", err)
+	}
+
+	if len(listResp.Items) == 0 {
+		return nil, fmt.Errorf("no records found for vimId: %s", vimId)
+	}
+
+	record := listResp.Items[0]
+	if record.Image == "" {
+		return nil, fmt.Errorf("record has no image field")
+	}
+
+	req, err = http.NewRequestWithContext(ctx, "GET",
+		fmt.Sprintf("%s/api/files/%s/%s/%s", pocketBaseURL, collectionName, record.ID, record.Image), nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create image request: %w", err)
+	}
+
+	resp, err = client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to download image: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("image download error %d: %s", resp.StatusCode, string(body))
+	}
+
+	return io.ReadAll(resp.Body)
+}
+
 func isImageFile(filename string) bool {
 	ext := filepath.Ext(filename)
 	switch ext {

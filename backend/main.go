@@ -89,6 +89,9 @@ func main() {
 		c.JSON(http.StatusOK, result)
 	})
 
+	// Special endpoint for macka by VIM ID (for iOS shortcut)
+	r.GET("/macka/vim/:vimId", handlers.GetMackaByVimId(cfg.PocketBaseURL))
+
 	log.Println("Server starting on :8080")
 	r.Run(":8080")
 }
