@@ -1,15 +1,29 @@
 <script>
+  import { onMount } from "svelte";
   import shortcutImg from "../static/shortcut.png";
-  let mackaCount = null;
 
-  async function getMackaCount() {
+  let animals = [];
+  let counts = {};
+
+  onMount(async () => {
     try {
-      const res = await fetch("/macka/count");
+      const res = await fetch("/api/animals");
+      animals = await res.json();
+    } catch (e) {
+      console.error("Failed to load animals:", e);
+    }
+  });
+
+  async function getCount(endpoint) {
+    try {
+      const res = await fetch(`/${endpoint}/count`);
       const data = await res.json();
-      mackaCount = data.count;
+      counts[endpoint] = data.count;
+      counts = counts; // trigger reactivity
     } catch (e) {
       console.error(e);
-      mackaCount = "Error :(";
+      counts[endpoint] = "Error :(";
+      counts = counts;
     }
   }
 </script>
@@ -66,52 +80,36 @@
           Nase uzasne funkcie!!!
         </h2>
 
-        <div
-          class="border-4 border-dotted border-fuchsia-500 bg-cyan-300 p-5 w-full max-w-[300px] rounded-3xl shadow-[10px_10px_0px_black] relative z-10 animate-border-rotate"
-        >
-          <h3 class="text-xl font-bold mb-2">Floppa Generator 3000</h3>
-          <p class="mb-4">Klikni a uvidis zazrak!</p>
-          <a
-            href="/floppapi"
-            target="_blank"
-            class="inline-block bg-orange-500 border-4 border-[outset] border-red-600 text-xl p-2 text-black font-bold hover:scale-110 transition-transform animate-pulse"
-            >&gt;&gt;&gt; Ziskaj Floppu &lt;&lt;&lt;</a
+        {#each animals as animal, i}
+          <div
+            class="border-4 border-dotted border-fuchsia-500 bg-cyan-300 p-5 w-full max-w-[300px] rounded-3xl shadow-[10px_10px_0px_black] relative z-10"
+            class:animate-border-rotate={i % 2 === 0}
+            class:animate-border-rotate-reverse={i % 2 === 1}
           >
-        </div>
-
-        <div
-          class="border-4 border-dotted border-fuchsia-500 bg-cyan-300 p-5 w-full max-w-[300px] rounded-3xl shadow-[10px_10px_0px_black] relative z-10 animate-border-rotate-reverse"
-        >
-          <h3 class="text-xl font-bold mb-2">
-            Macka (z epicke macka databaze)
-          </h3>
-          <p class="mb-4">Originalna macka z databazy!</p>
-          <a
-            href="/macka"
-            target="_blank"
-            class="inline-block bg-orange-500 border-4 border-[outset] border-red-600 text-xl p-2 text-black font-bold hover:scale-110 transition-transform animate-pulse"
-            >&gt;&gt;&gt; Ziskaj Macku &lt;&lt;&lt;</a
-          >
-        </div>
-
-        <div
-          class="border-4 border-dotted border-fuchsia-500 bg-cyan-300 p-5 w-full max-w-[300px] rounded-3xl shadow-[10px_10px_0px_black] relative z-10"
-        >
-          <h3 class="text-xl font-bold mb-2">Kolko mame maciek?</h3>
-          <button
-            on:click={getMackaCount}
-            class="inline-block bg-orange-500 border-4 border-[outset] border-red-600 text-xl p-2 text-black font-bold hover:scale-110 transition-transform animate-pulse mb-2"
-            >Zisti pocet</button
-          >
-          {#if mackaCount !== null}
-            <p
-              class="text-3xl font-bold text-red-600 bg-yellow-300 inline-block p-1 border-2 border-black"
+            <h3 class="text-xl font-bold mb-2">{animal.title}</h3>
+            <p class="mb-4">{animal.description}</p>
+            <a
+              href="/{animal.endpoint}"
+              target="_blank"
+              class="inline-block bg-orange-500 border-4 border-[outset] border-red-600 text-xl p-2 text-black font-bold hover:scale-110 transition-transform animate-pulse"
+              >&gt;&gt;&gt; Ziskaj &lt;&lt;&lt;</a
             >
-              Pocet maciek: {mackaCount}
-            </p>
-          {/if}
-        </div>
+            <div class="mt-3">
+              <button
+                on:click={() => getCount(animal.endpoint)}
+                class="inline-block bg-lime-400 border-4 border-[outset] border-green-600 text-sm p-1 text-black font-bold hover:scale-110 transition-transform"
+                >Pocet?</button
+              >
+              {#if counts[animal.endpoint] !== undefined}
+                <span class="text-lg font-bold text-red-600 bg-yellow-300 p-1 border-2 border-black ml-2">
+                  {counts[animal.endpoint]}
+                </span>
+              {/if}
+            </div>
+          </div>
+        {/each}
 
+        <!-- iOS Shortcut - only for macka -->
         <div
           class="border-4 border-dotted border-fuchsia-500 bg-cyan-300 p-5 w-full max-w-[300px] rounded-3xl shadow-[10px_10px_0px_black] relative z-10 animate-border-rotate"
         >
