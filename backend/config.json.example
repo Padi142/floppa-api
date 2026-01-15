@@ -1,3 +1,5 @@
 {
-  "pocketbase_url": "http://localhost:8080"
+  "pocketbase_url": "http://localhost:8080",
+  "pocketbase_admin": "admin@example.com",
+  "pocketbase_password": "your_password"
 }
