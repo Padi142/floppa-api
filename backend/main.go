@@ -81,6 +81,11 @@ func main() {
 	r.Static("/assets", "./frontend/dist/assets")
 	r.StaticFile("/", "./frontend/dist/index.html")
 
+	// Catch-all for SPA routes (admin, etc.)
+	r.NoRoute(func(c *gin.Context) {
+		c.File("./frontend/dist/index.html")
+	})
+
 	// Register all animal endpoints
 	for _, ac := range animalConfigs {
 		handler := &handlers.AnimalHandler{Animal: ac.Animal}
