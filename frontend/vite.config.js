@@ -10,6 +10,7 @@ export default defineConfig({
       "/api": "http://localhost:8080",
       "/floppapi": "http://localhost:8080",
       "/macka": "http://localhost:8080",
+      
     },
   },
 });
