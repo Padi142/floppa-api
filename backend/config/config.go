@@ -8,7 +8,9 @@ import (
 )
 
 type Config struct {
-	PocketBaseURL string `json:"pocketbase_url"`
+	PocketBaseURL      string `json:"pocketbase_url"`
+	PocketBaseAdmin    string `json:"pocketbase_admin"`
+	PocketBasePassword string `json:"pocketbase_password"`
 }
 
 func Load() (*Config, error) {
