@@ -59,19 +59,24 @@
         <h2
           class="underline decoration-wavy decoration-red-600 text-3xl md:text-5xl -rotate-6 inline-block mb-4"
         >
-          nas tym
+          nase zvieratka
         </h2>
         <div class="team-members">
-          <div class="text-2xl m-2">
-            <span class="text-green-700 drop-shadow-[2px_2px_0px_white]"
-              >matyas krejza</span
-            >
-          </div>
-          <div class="text-2xl m-2">
-            <span class="text-green-700 drop-shadow-[2px_2px_0px_white]"
-              >matej olexa</span
-            >
-          </div>
+          {#if animals.length === 0}
+            <div class="text-2xl m-2">
+              <span class="text-green-700 drop-shadow-[2px_2px_0px_white]"
+                >nacitavam...</span
+              >
+            </div>
+          {:else}
+            {#each animals as animal}
+              <div class="text-2xl m-2">
+                <span class="text-green-700 drop-shadow-[2px_2px_0px_white]"
+                  >{animal.title}</span
+                >
+              </div>
+            {/each}
+          {/if}
         </div>
       </div>
 

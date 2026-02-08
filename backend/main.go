@@ -56,6 +56,36 @@ func main() {
 				PocketBaseURL:  cfg.PocketBaseURL,
 			},
 		},
+		{
+			Endpoint:    "hyrax",
+			Title:       "Hyrax",
+			Description: "Rock-dwelling cuteness",
+			Animal: &animals.PocketBaseAnimal{
+				Name:           "hyrax",
+				CollectionName: "hyraxes",
+				PocketBaseURL:  cfg.PocketBaseURL,
+			},
+		},
+		{
+			Endpoint:    "manul",
+			Title:       "Manul",
+			Description: "Floofy Pallas's cat energy",
+			Animal: &animals.PocketBaseAnimal{
+				Name:           "manul",
+				CollectionName: "manuls",
+				PocketBaseURL:  cfg.PocketBaseURL,
+			},
+		},
+		{
+			Endpoint:    "rabbit",
+			Title:       "Rabbits",
+			Description: "Bouncy bunny pics",
+			Animal: &animals.PocketBaseAnimal{
+				Name:           "rabbit",
+				CollectionName: "rabbits",
+				PocketBaseURL:  cfg.PocketBaseURL,
+			},
+		},
 	}
 
 	r := gin.Default()
